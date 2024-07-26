@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 // toDo-object type
 type ToDoProps = {
@@ -17,6 +17,45 @@ enum STATUS {
   DONE = "done",
 }
 
+// ToDo component
+const ToDo: React.FC<{ toDo: ToDoProps }> = (props) => {
+  return <li key={props.toDo.id}>{props.toDo.title}</li>;
+};
+
+// List component
+const List: React.FC<{ list: ListProp; status: STATUS }> = (props) => {
+  const filteredList: ListProp = props.list.filter(
+    (todo) => todo.status === props.status
+  );
+
+  const color =
+    props.status === STATUS.PENDING
+      ? "red"
+      : props.status === STATUS.INPROGRESS
+      ? "yellow"
+      : props.status === STATUS.DONE
+      ? "green"
+      : undefined;
+
+  return (
+    <div
+      style={{
+        height: "100%",
+        width: "33%",
+        border: "5px solid black",
+      }}
+    >
+      <h1 style={{ background: `${color}` }}>{props.status.toUpperCase()}</h1>
+      <ul>
+        {filteredList.map((toDo) => (
+          <ToDo toDo={toDo} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// Root app component
 function App() {
   const changeStatus = () => {
     // onClick, take id from clicked toDo  and change status
@@ -31,51 +70,13 @@ function App() {
   // STATE
   const [toDoList, setToDoList] = useState<ListProp | []>([]);
 
-  if (toDoList.length === 0) {
-    setToDoList([
-      { id: 0, title: "Initial title string", status: STATUS.PENDING },
-    ]);
-  }
-  console.log(toDoList);
-
-  const pendingToDoList: ListProp | [] = toDoList.filter((toDo) => {
-    toDo.status === STATUS.PENDING;
-  });
-  console.log(pendingToDoList);
-
-  // Need an input for strings
   return (
+    // Need an input component for toDo strings data
     <>
-      <div></div>
       <div style={{ display: "flex", height: "1000px", width: "100%" }}>
-        <div
-          style={{
-            height: "100%",
-            width: "33%",
-            border: "5px solid black",
-          }}
-        >
-          <h1 style={{ background: "red" }}>PENDING</h1>
-        </div>
-        <div
-          style={{
-            height: "100%",
-            width: "33%",
-            borderTop: "5px solid black",
-            borderBottom: "5px solid black",
-          }}
-        >
-          <h1 style={{ background: "yellow" }}>IN PROGRESS</h1>
-        </div>
-        <div
-          style={{
-            height: "100%",
-            width: "33%",
-            border: "5px solid black",
-          }}
-        >
-          <h1 style={{ background: "green" }}>DONE</h1>
-        </div>
+        <List list={toDoList} status={STATUS.PENDING} />
+        <List list={toDoList} status={STATUS.INPROGRESS} />
+        <List list={toDoList} status={STATUS.DONE} />
       </div>
     </>
   );
