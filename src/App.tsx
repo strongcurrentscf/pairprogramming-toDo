@@ -91,31 +91,31 @@ const NewTodo: React.FC<{ onAddToDo: (text: string) => void }> = (props) => {
   );
 };
 
+// DUMMMY DATA
+// const toDoInitialDummyList: ListProp = [
+//   { id: 1, text: "Task 1", status: STATUS.PENDING },
+//   { id: 2, text: "Task 2", status: STATUS.DONE },
+//   { id: 3, text: "Task 3", status: STATUS.INPROGRESS },
+//   { id: 4, text: "Task 4", status: STATUS.PENDING },
+//   { id: 5, text: "Task 5", status: STATUS.DONE },
+//   { id: 6, text: "Task 6", status: STATUS.INPROGRESS },
+//   { id: 7, text: "Task 7", status: STATUS.PENDING },
+//   { id: 8, text: "Task 8", status: STATUS.DONE },
+//   { id: 9, text: "Task 9", status: STATUS.INPROGRESS },
+//   { id: 10, text: "Task 10", status: STATUS.PENDING },
+//   { id: 11, text: "Task 11", status: STATUS.DONE },
+//   { id: 12, text: "Task 12", status: STATUS.INPROGRESS },
+//   { id: 13, text: "Task 13", status: STATUS.PENDING },
+//   { id: 14, text: "Task 14", status: STATUS.DONE },
+//   { id: 15, text: "Task 15", status: STATUS.INPROGRESS },
+// ];
+
 // Root app component
 function App() {
-  // DUMMMY DATA
-  // const toDoInitialDummyList: ListProp = [
-  //   { id: 1, text: "Task 1", status: STATUS.PENDING },
-  //   { id: 2, text: "Task 2", status: STATUS.DONE },
-  //   { id: 3, text: "Task 3", status: STATUS.INPROGRESS },
-  //   { id: 4, text: "Task 4", status: STATUS.PENDING },
-  //   { id: 5, text: "Task 5", status: STATUS.DONE },
-  //   { id: 6, text: "Task 6", status: STATUS.INPROGRESS },
-  //   { id: 7, text: "Task 7", status: STATUS.PENDING },
-  //   { id: 8, text: "Task 8", status: STATUS.DONE },
-  //   { id: 9, text: "Task 9", status: STATUS.INPROGRESS },
-  //   { id: 10, text: "Task 10", status: STATUS.PENDING },
-  //   { id: 11, text: "Task 11", status: STATUS.DONE },
-  //   { id: 12, text: "Task 12", status: STATUS.INPROGRESS },
-  //   { id: 13, text: "Task 13", status: STATUS.PENDING },
-  //   { id: 14, text: "Task 14", status: STATUS.DONE },
-  //   { id: 15, text: "Task 15", status: STATUS.INPROGRESS },
-  // ];
-
   // State
   const [toDoList, setToDoList] = useState<ToDoProps[]>([]);
 
-  // Handler functions
+  // change status handler
   const changeToDoStatus = (id: string) => {
     const toDoListIndex = toDoList.findIndex((toDo) => toDo.id === id);
 
@@ -148,6 +148,7 @@ function App() {
     setToDoList([...updatedToDoList, updatedToDo]);
   };
 
+  // add Todo handler
   const addToDo = (toDoText: string) => {
     const newToDo: ToDoProps = {
       id: new Date().toISOString(),
@@ -160,6 +161,7 @@ function App() {
     });
   };
 
+  // remove toDo handler
   const removeToDo = (toDoId: string) => {
     const toDoListIndex = toDoList.findIndex((toDo) => toDo.id === toDoId);
 
