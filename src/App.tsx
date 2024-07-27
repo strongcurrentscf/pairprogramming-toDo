@@ -17,13 +17,20 @@ enum STATUS {
   DONE = "done",
 }
 
+//////////* COMPONENTS *//////////
 // ToDo component
-const ToDo: React.FC<{ text: string }> = (props) => {
-  return <li>{props.text}</li>;
+const ToDo: React.FC<{ text: string; onChangeToDoStatus: () => void }> = (
+  props
+) => {
+  return <li onClick={props.onChangeToDoStatus}>{props.text}</li>;
 };
 
 // List component
-const List: React.FC<{ list: ListProp; status: STATUS }> = (props) => {
+const List: React.FC<{
+  list: ListProp;
+  status: STATUS;
+  onChangeToDoStatus: (id: string) => void;
+}> = (props) => {
   const filteredList: ListProp = props.list.filter(
     (todo) => todo.status === props.status
   );
@@ -48,7 +55,11 @@ const List: React.FC<{ list: ListProp; status: STATUS }> = (props) => {
       <h1 style={{ background: color }}>{props.status.toUpperCase()}</h1>
       <ul>
         {filteredList.map((toDo) => (
-          <ToDo key={toDo.id} text={toDo.text} />
+          <ToDo
+            key={toDo.id}
+            text={toDo.text}
+            onChangeToDoStatus={props.onChangeToDoStatus.bind(null, toDo.id)}
+          />
         ))}
       </ul>
     </div>
@@ -73,7 +84,7 @@ const NewTodo: React.FC<{ onAddToDo: (text: string) => void }> = (props) => {
 
   return (
     <form onSubmit={submitHandler}>
-      <label htmlFor="text">Todo text</label>
+      <label htmlFor="text">Enter Todo Text</label>
       <input type="text" id="text" ref={todoTextInputRef}></input>
       <button>Add Todo</button>
     </form>
@@ -101,12 +112,40 @@ function App() {
   //   { id: 15, text: "Task 15", status: STATUS.INPROGRESS },
   // ];
 
-  // STATE
+  // State
   const [toDoList, setToDoList] = useState<ToDoProps[]>([]);
 
   // Handler functions
-  const changeStatus = () => {
-    // onClick, take id from clicked toDo  and change status
+  const changeToDoStatus = (id: string) => {
+    const toDoListIndex = toDoList.findIndex((toDo) => toDo.id === id);
+
+    const copiedToDoList: ListProp = [...toDoList];
+
+    const existingToDo: ToDoProps = copiedToDoList[toDoListIndex];
+
+    let status: STATUS = STATUS.PENDING;
+
+    if (existingToDo.status === STATUS.PENDING) {
+      status = STATUS.INPROGRESS;
+    }
+    if (existingToDo.status === STATUS.INPROGRESS) {
+      status = STATUS.DONE;
+    }
+    if (existingToDo.status === STATUS.DONE) {
+      removeToDo(existingToDo.id);
+      return;
+    }
+
+    const updatedToDo: ToDoProps = {
+      ...existingToDo,
+      status: status,
+    };
+
+    const updatedToDoList: ListProp = copiedToDoList.filter(
+      (toDo) => toDo.id !== updatedToDo.id
+    );
+
+    setToDoList([...updatedToDoList, updatedToDo]);
   };
 
   const addToDo = (toDoText: string) => {
@@ -121,23 +160,35 @@ function App() {
     });
   };
 
-  const removeToDo = (toDoId: number) => {
+  const removeToDo = (toDoId: string) => {
     const toDoListIndex = toDoList.findIndex((toDo) => toDo.id === toDoId);
 
-    const toDoListCopy = [...toDoList];
-    toDoListCopy.splice(toDoListIndex, 1);
+    const copiedToDoList = [...toDoList];
+    copiedToDoList.splice(toDoListIndex, 1);
+    console.log(copiedToDoList);
 
-    setToDoList(toDoListCopy);
+    setToDoList(copiedToDoList);
   };
 
   return (
-    // Need an input component for toDo strings data
     <>
       <NewTodo onAddToDo={addToDo} />
       <div style={{ display: "flex", height: "1000px", width: "100%" }}>
-        <List list={toDoList} status={STATUS.PENDING} />
-        <List list={toDoList} status={STATUS.INPROGRESS} />
-        <List list={toDoList} status={STATUS.DONE} />
+        <List
+          list={toDoList}
+          status={STATUS.PENDING}
+          onChangeToDoStatus={changeToDoStatus}
+        />
+        <List
+          list={toDoList}
+          status={STATUS.INPROGRESS}
+          onChangeToDoStatus={changeToDoStatus}
+        />
+        <List
+          list={toDoList}
+          status={STATUS.DONE}
+          onChangeToDoStatus={changeToDoStatus}
+        />
       </div>
     </>
   );
